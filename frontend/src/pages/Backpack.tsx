@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
-import { Backpack as BackpackIcon, Search, Lock, Sparkles, Filter, X } from 'lucide-react';
+import { Backpack as BackpackIcon, Search, Lock, Sparkles, Filter, X, Globe } from 'lucide-react';
 import { api } from '../lib/api';
 
 const MOODS = [
@@ -27,6 +27,15 @@ export const Backpack = () => {
     };
     fetchEntries();
   }, []);
+
+  const toggleShare = async (id: string) => {
+    try {
+      const { data } = await api.put(`/entries/${id}/share`);
+      setEntries(entries.map(e => e._id === id ? data : e));
+    } catch (err) {
+      console.error('Failed to toggle share status:', err);
+    }
+  };
 
   const filteredEntries = entries.filter((entry) => {
     const matchesSearch = entry.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -146,9 +155,22 @@ export const Backpack = () => {
                       </span>
                     ))}
                   </div>
-                  <span className="text-xs text-muted-foreground font-medium bg-background/50 px-2 py-1 rounded-lg shrink-0">
-                    {format(new Date(entry.date), 'MMM d')}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground font-medium bg-background/50 px-2 py-1 rounded-lg shrink-0">
+                      {format(new Date(entry.date), 'MMM d')}
+                    </span>
+                    {!entry.isLocked && (
+                      <motion.button 
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => toggleShare(entry._id)}
+                        className={`cursor-pointer p-1.5 rounded-full transition-all border ${entry.isShared ? 'bg-blue-500/10 text-blue-500 border-blue-500/30' : 'bg-background/50 text-muted-foreground border-border hover:text-foreground'}`}
+                        title={entry.isShared ? "Shared Anonymously" : "Share Anonymously"}
+                      >
+                        <Globe className="w-4 h-4" />
+                      </motion.button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex-1">

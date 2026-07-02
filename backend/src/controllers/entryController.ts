@@ -187,20 +187,77 @@ export const getCompanionLetter = async (req: AuthRequest, res: Response): Promi
   try {
     const entries = await Entry.find({ userId: req.user.id }).sort({ date: -1 }).limit(10);
     
-    if (entries.length === 0) {
-      res.status(200).json({ letter: "I don't have enough memories of you yet to write a full letter. Start writing in your journal, and I'll be here waiting to support you!" });
-      return;
+    let pastContext = '';
+    if (entries.length > 0) {
+      pastContext = entries.map(e => `[${format(new Date(e.date), 'MMM d, yyyy')} - Mood: ${e.moods?.join(', ')}] ${e.content}`).join('\n\n');
     }
 
-    const journalContent = entries.map(e => `Date: ${e.date.toDateString()}. Moods: ${e.moods?.join(', ')}. Entry: ${e.content}`).join('\n\n');
-    const prompt = `You are a deeply empathetic, poetic, and supportive AI companion. Below are the user's recent journal entries. Write them a beautiful, deeply personalized, encouraging 3-4 paragraph letter. Acknowledge their specific struggles, celebrate their wins, and offer gentle wisdom. Sign off with a warm closing from "Your Companion".\n\n${journalContent}`;
+    const prompt = `You are a deeply empathetic AI emotional companion.
+    Below is the user's journal history over their last few entries.
+    Read their journey, and write a personalized, supportive, and poetic 3-4 paragraph letter to them.
+    Validate their struggles, celebrate their wins, and offer gentle encouragement.
+    Do not mention that you are reading from a database or use robotic language. Speak like a wise, caring friend.
     
+    Journal History:
+    ${pastContext}
+    
+    Write the letter now:`;
+
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
     });
     
     res.status(200).json({ letter: response.text });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const getCommunityEntries = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    // Exclude userId to maintain anonymity
+    const entries = await Entry.find({ isShared: true })
+      .select('-userId -aiReflection')
+      .sort({ date: -1 })
+      .limit(50);
+    res.status(200).json(entries);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const toggleShare = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const entry = await Entry.findOne({ _id: req.params.id, userId: req.user.id });
+    if (!entry) {
+      res.status(404).json({ message: 'Entry not found' });
+      return;
+    }
+    
+    entry.isShared = !entry.isShared;
+    await entry.save();
+    
+    res.status(200).json(entry);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const sendHug = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const entry = await Entry.findOneAndUpdate(
+      { _id: req.params.id, isShared: true },
+      { $inc: { hugs: 1 } },
+      { new: true }
+    );
+    
+    if (!entry) {
+      res.status(404).json({ message: 'Entry not found or not shared' });
+      return;
+    }
+    
+    res.status(200).json({ hugs: entry.hugs });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

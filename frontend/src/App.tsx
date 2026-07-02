@@ -10,6 +10,7 @@ import { Backpack } from './pages/Backpack';
 import { Analytics } from './pages/Analytics';
 import { Companion } from './pages/Companion';
 import { Galaxy } from './pages/Galaxy';
+import { Community } from './pages/Community';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useStore();
@@ -112,6 +113,14 @@ const AnimatedRoutes = () => {
           element={
             <ProtectedRoute>
               <Galaxy />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/community" 
+          element={
+            <ProtectedRoute>
+              <Community />
             </ProtectedRoute>
           } 
         />

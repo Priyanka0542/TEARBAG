@@ -10,6 +10,8 @@ const entrySchema = new mongoose.Schema(
     unlockDate: { type: Date, default: null },
     tags: [{ type: String }],
     imageUrl: { type: String, default: null },
+    isShared: { type: Boolean, default: false },
+    hugs: { type: Number, default: 0 },
     date: { type: Date, default: Date.now },
   },
   { timestamps: true }

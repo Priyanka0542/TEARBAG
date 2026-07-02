@@ -125,7 +125,7 @@ export const Galaxy = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 1.5 }}
-      className="absolute inset-0 w-full h-full bg-[#020208] z-0 overflow-hidden"
+      className="fixed inset-0 w-screen h-screen bg-[#020208] z-0 overflow-hidden"
     >
       <div className="absolute top-24 left-10 z-10 pointer-events-none">
         <h1 className="text-4xl md:text-5xl font-heading font-medium text-white flex items-center gap-4 mb-2 drop-shadow-2xl">
