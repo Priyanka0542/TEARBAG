@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { BookHeart, LogOut, Home, PenTool, Sprout } from 'lucide-react';
+import { BookHeart, LogOut, Home, PenTool, Sprout, Backpack } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { motion } from 'framer-motion';
 
@@ -73,6 +73,22 @@ export const Navbar = () => {
             )}
             <Sprout className="w-4 h-4 relative z-10" />
             <span className="relative z-10">Garden</span>
+          </Link>
+
+          <Link 
+            to="/backpack" 
+            className={`relative px-4 py-2 rounded-full transition-colors flex items-center space-x-2 ${location.pathname === '/backpack' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            {location.pathname === '/backpack' && (
+              <motion.div
+                layoutId="nav-indicator"
+                className="absolute inset-0 bg-primary/10 rounded-full"
+                initial={false}
+                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+              />
+            )}
+            <Backpack className="w-4 h-4 relative z-10" />
+            <span className="relative z-10">Backpack</span>
           </Link>
 
           <div className="w-px h-6 bg-border mx-2" />

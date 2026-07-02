@@ -6,6 +6,7 @@ import { Dashboard } from './pages/Dashboard';
 import { Login } from './pages/Login';
 import { Journal } from './pages/Journal';
 import { Garden } from './pages/Garden';
+import { Backpack } from './pages/Backpack';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useStore();
@@ -76,6 +77,14 @@ const AnimatedRoutes = () => {
           element={
             <ProtectedRoute>
               <Garden />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/backpack" 
+          element={
+            <ProtectedRoute>
+              <Backpack />
             </ProtectedRoute>
           } 
         />
