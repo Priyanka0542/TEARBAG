@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookHeart, Mail, Lock, ArrowRight, Loader2, Sparkles } from 'lucide-react';
+import { BookHeart, Mail, Lock, ArrowRight, Loader2, Sparkles, User } from 'lucide-react';
 import { api } from '../lib/api';
 import { useStore } from '../store/useStore';
 import { useNavigate } from 'react-router-dom';
@@ -51,23 +51,23 @@ export const Login = () => {
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", duration: 0.8, bounce: 0.3 }}
-        className="w-full max-w-md p-10 rounded-[2.5rem] glass text-center relative overflow-hidden group"
+        className="w-full max-w-md p-10 rounded-[2.5rem] bg-white/5 dark:bg-black/20 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-[0_0_60px_-15px_rgba(124,58,237,0.4)] text-center relative overflow-hidden group"
       >
-        <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
         
         <div className="relative z-10">
           <motion.div 
             whileHover={{ scale: 1.05, rotate: 5 }}
             className="flex justify-center mb-8"
           >
-            <div className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-lg shadow-primary/10">
+            <div className="w-20 h-20 rounded-3xl bg-primary/20 backdrop-blur-md border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_30px_-5px_rgba(124,58,237,0.5)]">
               <BookHeart className="w-10 h-10" />
             </div>
           </motion.div>
           
-          <h1 className="text-4xl font-heading font-semibold tracking-tight mb-3">TearBag</h1>
+          <h1 className="text-4xl font-heading font-semibold tracking-tight mb-3 text-foreground drop-shadow-sm">TearBag</h1>
           <p className="text-muted-foreground font-light text-lg mb-10 flex items-center justify-center gap-2">
-            The Emotional Vault <Sparkles className="w-4 h-4 text-pink-400" />
+            The Emotional Vault <Sparkles className="w-4 h-4 text-pink-400 animate-pulse" />
           </p>
 
           <AnimatePresence mode="wait">
@@ -78,7 +78,7 @@ export const Login = () => {
                 exit={{ opacity: 0, height: 0, mb: 0 }}
                 className="overflow-hidden"
               >
-                <div className="p-4 rounded-2xl bg-red-500/10 text-red-500 text-sm border border-red-500/20">
+                <div className="p-4 rounded-2xl bg-red-500/10 backdrop-blur-md text-red-500 text-sm border border-red-500/30 shadow-[0_0_20px_-5px_rgba(239,68,68,0.3)]">
                   {error}
                 </div>
               </motion.div>
@@ -96,12 +96,12 @@ export const Login = () => {
                 >
                   <label className="text-sm font-medium text-muted-foreground ml-1 mb-1 block">Name</label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/70" />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground/70" />
                     <input 
                       type="text" 
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-background/50 border border-border rounded-2xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-muted-foreground/40 font-light"
+                      className="w-full bg-background/40 backdrop-blur-sm border border-border/50 hover:border-primary/50 rounded-2xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground/40 font-light"
                       placeholder="Your Name"
                       required
                     />
@@ -118,7 +118,7 @@ export const Login = () => {
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-background/50 border border-border rounded-2xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-muted-foreground/40 font-light"
+                  className="w-full bg-background/40 backdrop-blur-sm border border-border/50 hover:border-primary/50 rounded-2xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground/40 font-light"
                   placeholder="hello@example.com"
                   required
                 />
@@ -133,7 +133,7 @@ export const Login = () => {
                   type="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-background/50 border border-border rounded-2xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all placeholder:text-muted-foreground/40 font-light"
+                  className="w-full bg-background/40 backdrop-blur-sm border border-border/50 hover:border-primary/50 rounded-2xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-muted-foreground/40 font-light"
                   placeholder="••••••••"
                   required
                 />
