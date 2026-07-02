@@ -8,6 +8,8 @@ const entrySchema = new mongoose.Schema(
     moods: [{ type: String }],
     aiReflection: { type: String, default: '' },
     unlockDate: { type: Date, default: null },
+    tags: [{ type: String }],
+    imageUrl: { type: String, default: null },
     date: { type: Date, default: Date.now },
   },
   { timestamps: true }

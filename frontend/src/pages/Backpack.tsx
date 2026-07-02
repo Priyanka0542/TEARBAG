@@ -122,16 +122,32 @@ export const Backpack = () => {
                 key={entry._id}
                 className={`glass p-6 rounded-3xl flex flex-col gap-4 group hover:shadow-[0_0_30px_-5px_rgba(124,58,237,0.3)] hover:border-primary/40 transition-all duration-300 ${entry.isLocked ? 'bg-background/80 blur-[2px] hover:blur-none transition-all' : ''}`}
               >
-                <div className="flex justify-between items-start">
+                {entry.imageUrl && !entry.isLocked && (
+                  <div className="w-full h-48 rounded-2xl overflow-hidden mb-4 relative">
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent z-10" />
+                    <img 
+                      src={`http://localhost:5000${entry.imageUrl}`} 
+                      alt="Memory" 
+                      className="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-700"
+                    />
+                  </div>
+                )}
+
+                <div className="flex justify-between items-start mb-2">
                   <div className="flex gap-2 flex-wrap">
                     {entry.moods?.map((m: string) => (
                       <span key={m} className="px-2.5 py-1 rounded-lg bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-wider">
                         {m}
                       </span>
                     ))}
+                    {entry.tags?.map((t: string) => (
+                      <span key={t} className="px-2.5 py-1 rounded-lg bg-pink-500/10 text-pink-400 text-[10px] font-semibold tracking-wider">
+                        {t}
+                      </span>
+                    ))}
                   </div>
-                  <span className="text-xs text-muted-foreground font-medium bg-background/50 px-2 py-1 rounded-lg">
-                    {format(new Date(entry.date), 'MMM d, yyyy')}
+                  <span className="text-xs text-muted-foreground font-medium bg-background/50 px-2 py-1 rounded-lg shrink-0">
+                    {format(new Date(entry.date), 'MMM d')}
                   </span>
                 </div>
 

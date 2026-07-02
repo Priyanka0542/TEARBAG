@@ -18,7 +18,8 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "jwt-simple": "^0.5.6",
-    "mongoose": "^8.24.1"
+    "mongoose": "^8.24.1",
+    "multer": "^2.2.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -26,6 +27,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/jwt-simple": "^0.5.36",
+    "@types/multer": "^2.2.0",
     "@types/node": "^26.1.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^6.0.3"

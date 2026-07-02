@@ -28,17 +28,46 @@ export const getEntries = async (req: AuthRequest, res: Response): Promise<void>
 
 export const createEntry = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { title, content, moods, unlockDate } = req.body;
+    const { title, content, unlockDate } = req.body;
+    let moods = req.body.moods;
+    if (typeof moods === 'string') {
+      try {
+        moods = JSON.parse(moods);
+      } catch (e) {
+        moods = [moods];
+      }
+    }
     
+    let imageUrl = '';
+    if ((req as any).file) {
+      imageUrl = `/uploads/${(req as any).file.filename}`;
+    }
+
     let aiReflection = '';
+    let tags: string[] = [];
+    
     if (content && content.length > 20) {
       try {
-        const prompt = `You are a supportive, empathetic, and calming AI companion for a journaling app called TearBag. The user has just written a journal entry with the mood(s): ${moods?.join(', ') || 'neutral'}. Here is their entry: "${content}". Write a brief, gentle 1-2 sentence reflection or encouraging thought back to them. Do not include quotes around your response.`;
+        const prompt = `You are a supportive AI companion for a journaling app. The user has just written a journal entry with the mood(s): ${moods?.join(', ') || 'neutral'}. Here is their entry: "${content}". 
+        1. Write a brief, gentle 1-2 sentence reflection back to them.
+        2. Generate 3 highly relevant, single-word tags (starting with #) based on the content.
+        Format your response exactly like this:
+        Reflection: [your reflection]
+        Tags: [#tag1, #tag2, #tag3]`;
+        
         const response = await ai.models.generateContent({
           model: 'gemini-2.5-flash',
           contents: prompt,
         });
-        aiReflection = response.text || '';
+        
+        const responseText = response.text || '';
+        const reflectionMatch = responseText.match(/Reflection:\s*(.*)/);
+        const tagsMatch = responseText.match(/Tags:\s*(.*)/);
+        
+        if (reflectionMatch) aiReflection = reflectionMatch[1].trim();
+        if (tagsMatch) {
+          tags = tagsMatch[1].split(',').map((t: string) => t.trim());
+        }
       } catch (err) {
         console.error('AI Reflection Error:', err);
       }
@@ -51,6 +80,8 @@ export const createEntry = async (req: AuthRequest, res: Response): Promise<void
       moods,
       aiReflection,
       unlockDate,
+      tags,
+      imageUrl,
     });
     const createdEntry = await entry.save();
     res.status(201).json(createdEntry);
