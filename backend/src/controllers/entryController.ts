@@ -70,8 +70,8 @@ export const createEntry = async (req: AuthRequest, res: Response): Promise<void
         const reflectionMatch = responseText.match(/Reflection:\s*(.*)/);
         const tagsMatch = responseText.match(/Tags:\s*(.*)/);
         
-        if (reflectionMatch) aiReflection = reflectionMatch[1].trim();
-        if (tagsMatch) {
+        if (reflectionMatch && reflectionMatch[1]) aiReflection = reflectionMatch[1].trim();
+        if (tagsMatch && tagsMatch[1]) {
           tags = tagsMatch[1].split(',').map((t: string) => t.trim());
         }
       } catch (err) {
@@ -116,8 +116,12 @@ export const getAnalytics = async (req: AuthRequest, res: Response): Promise<voi
     if (entries.length > 0) {
       streak = 1;
       for (let i = 0; i < entries.length - 1; i++) {
-        const current = new Date(entries[i].date).setHours(0,0,0,0);
-        const previous = new Date(entries[i+1].date).setHours(0,0,0,0);
+        const currentEntry = entries[i];
+        const previousEntry = entries[i+1];
+        if (!currentEntry || !previousEntry || !currentEntry.date || !previousEntry.date) continue;
+        
+        const current = new Date(currentEntry.date).setHours(0,0,0,0);
+        const previous = new Date(previousEntry.date).setHours(0,0,0,0);
         const diffDays = (current - previous) / (1000 * 60 * 60 * 24);
         if (diffDays === 1) {
           streak++;

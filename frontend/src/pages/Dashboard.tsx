@@ -32,6 +32,83 @@ const itemVariants = {
   show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', bounce: 0.4 } }
 };
 
+const WeatherEffect = ({ mood }: { mood: string | null }) => {
+  if (!mood) return null;
+  
+  if (mood === 'Sad' || mood === 'Crying' || mood === 'Lonely') {
+    // Rain Effect
+    return (
+      <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden opacity-30">
+        <div className="absolute inset-0 bg-blue-900/10" />
+        {Array.from({ length: 50 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-[1px] h-10 bg-blue-400/50"
+            initial={{ top: -50, left: `${Math.random() * 100}vw`, opacity: 0 }}
+            animate={{ 
+              top: '100vh', 
+              opacity: [0, 1, 1, 0],
+              left: `${(Math.random() - 0.5) * 20 + (Math.random() * 100)}vw` // Slight wind
+            }}
+            transition={{ 
+              duration: 1 + Math.random(), 
+              repeat: Infinity, 
+              delay: Math.random() * 2,
+              ease: 'linear'
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+  
+  if (mood === 'Happy' || mood === 'Excited' || mood === 'Loved') {
+    // Sun Rays Effect
+    return (
+      <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden opacity-40">
+        <div className="absolute inset-0 bg-yellow-500/5 mix-blend-overlay" />
+        {Array.from({ length: 8 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute top-0 w-64 h-[200vh] bg-gradient-to-b from-yellow-300/20 to-transparent blur-3xl transform -rotate-45 origin-top-left"
+            initial={{ left: `${i * 15}vw`, opacity: 0.3 }}
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 4 + Math.random() * 4, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (mood === 'Anxious' || mood === 'Angry') {
+    // Stormy / Fast particles
+    return (
+      <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden opacity-20">
+        <div className="absolute inset-0 bg-red-900/10" />
+        {Array.from({ length: 30 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-red-500/30 rounded-full blur-sm"
+            initial={{ top: `${Math.random() * 100}vh`, left: `${Math.random() * 100}vw`, scale: Math.random() }}
+            animate={{ 
+              top: [`${Math.random() * 100}vh`, `${Math.random() * 100}vh`],
+              left: [`${Math.random() * 100}vw`, `${Math.random() * 100}vw`],
+            }}
+            transition={{ 
+              duration: 3 + Math.random() * 2, 
+              repeat: Infinity,
+              repeatType: 'mirror',
+              ease: 'easeInOut'
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  return null;
+};
+
 export const Dashboard = () => {
   const { user } = useStore();
   const today = format(new Date(), 'EEEE, MMMM do');
@@ -86,6 +163,8 @@ export const Dashboard = () => {
   const filteredEntries = selectedMood 
     ? entries.filter(e => e.moods.includes(selectedMood))
     : entries;
+    
+  const latestMood = entries.length > 0 && entries[0].moods?.length > 0 ? entries[0].moods[0] : null;
 
   return (
     <motion.div 
@@ -93,8 +172,10 @@ export const Dashboard = () => {
       animate={{ opacity: 1, filter: 'blur(0px)' }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.6 }}
-      className="space-y-12 w-full"
+      className="space-y-12 w-full relative"
     >
+      <WeatherEffect mood={latestMood} />
+      
       <header className="pt-8">
         <motion.h1 
           initial={{ opacity: 0, y: -10 }}
@@ -183,14 +264,16 @@ export const Dashboard = () => {
                     placeholder="Jot down a quick thought..."
                     className="w-full bg-background/50 border border-border rounded-xl p-4 pb-14 min-h-[120px] resize-none focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 text-base font-light placeholder:text-muted-foreground/50 transition-all"
                   />
-                  <button 
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={handleQuickSave}
                     disabled={saving || !quickLog.trim()}
-                    className="absolute bottom-3 right-3 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:hover:bg-primary transition-all flex items-center justify-center shadow-lg shadow-primary/20 gap-2 font-medium text-sm"
+                    className="absolute bottom-3 right-3 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:hover:bg-primary transition-all flex items-center justify-center shadow-lg shadow-primary/20 gap-2 font-medium text-sm cursor-pointer"
                   >
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     Lock in Vault
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </motion.div>
@@ -198,7 +281,7 @@ export const Dashboard = () => {
         </AnimatePresence>
       </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
         <motion.div 
           whileHover={{ y: -5 }}
           className="glass rounded-[2.5rem] p-8 h-72 flex flex-col justify-between relative overflow-hidden group transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10"

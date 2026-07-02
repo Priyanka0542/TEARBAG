@@ -72,13 +72,15 @@ export const Companion = () => {
                   <p className="text-sm text-muted-foreground">From your AI Companion</p>
                 </div>
               </div>
-              <button 
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={fetchLetter}
                 disabled={loading}
-                className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-2 font-medium"
+                className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-2 font-medium bg-primary/10 px-4 py-2 rounded-xl cursor-pointer"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Write another'}
-              </button>
+              </motion.button>
             </div>
             
             <motion.div 

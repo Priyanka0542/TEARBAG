@@ -9,6 +9,7 @@ import { Garden } from './pages/Garden';
 import { Backpack } from './pages/Backpack';
 import { Analytics } from './pages/Analytics';
 import { Companion } from './pages/Companion';
+import { Galaxy } from './pages/Galaxy';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useStore();
@@ -103,6 +104,14 @@ const AnimatedRoutes = () => {
           element={
             <ProtectedRoute>
               <Companion />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/galaxy" 
+          element={
+            <ProtectedRoute>
+              <Galaxy />
             </ProtectedRoute>
           } 
         />

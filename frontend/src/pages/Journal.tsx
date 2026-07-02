@@ -169,29 +169,35 @@ export const Journal = () => {
         <div className="w-16 h-1 bg-border/50 rounded-full mb-8" />
         
         <div className={`mb-8 flex flex-wrap items-center gap-4 transition-opacity duration-700 ${isFocused ? 'opacity-30' : 'opacity-100'}`}>
-          <button 
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setIsCapsule(!isCapsule)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all border ${isCapsule ? 'bg-primary/10 border-primary/50 text-primary' : 'bg-background/50 border-border text-muted-foreground hover:bg-background/80'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all border shadow-sm cursor-pointer ${isCapsule ? 'bg-primary/20 border-primary/50 text-primary shadow-primary/20' : 'bg-background/50 border-border text-muted-foreground hover:bg-background/80 hover:text-foreground'}`}
           >
             {isCapsule ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
             <span className="text-sm font-medium">Time Capsule</span>
-          </button>
+          </motion.button>
           
-          <button 
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={toggleListening}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all border ${isListening ? 'bg-red-500/10 border-red-500/50 text-red-500 animate-[pulse_2s_ease-in-out_infinite]' : 'bg-background/50 border-border text-muted-foreground hover:bg-background/80'}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all border shadow-sm cursor-pointer ${isListening ? 'bg-red-500/20 border-red-500/50 text-red-500 shadow-red-500/20 animate-[pulse_2s_ease-in-out_infinite]' : 'bg-background/50 border-border text-muted-foreground hover:bg-background/80 hover:text-foreground'}`}
           >
             {isListening ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
             <span className="text-sm font-medium">{isListening ? 'Listening...' : 'Voice Dictation'}</span>
-          </button>
+          </motion.button>
           
-          <button 
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all border bg-background/50 border-border text-muted-foreground hover:bg-background/80"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl transition-all border bg-background/50 border-border text-muted-foreground hover:bg-background/80 hover:text-foreground shadow-sm cursor-pointer"
           >
             <ImageIcon className="w-4 h-4" />
             <span className="text-sm font-medium">Add Photo</span>
-          </button>
+          </motion.button>
           <input 
             type="file" 
             ref={fileInputRef} 
