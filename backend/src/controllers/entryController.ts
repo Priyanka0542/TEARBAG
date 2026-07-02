@@ -3,7 +3,7 @@ import Entry from '../models/Entry';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { GoogleGenAI } from '@google/genai';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
 
 export const getEntries = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
