@@ -48,9 +48,15 @@ export const createEntry = async (req: AuthRequest, res: Response): Promise<void
     
     if (content && content.length > 20) {
       try {
+        const pastEntries = await Entry.find({ userId: req.user.id }).sort({ date: -1 }).limit(3);
+        const pastContext = pastEntries.length > 0 
+          ? `Past recent context from the user: ${pastEntries.map(e => `Moods: ${e.moods?.join(',')}. Entry: ${e.content}`).join(' | ')}`
+          : 'No past context available.';
+
         const prompt = `You are a supportive AI companion for a journaling app. The user has just written a journal entry with the mood(s): ${moods?.join(', ') || 'neutral'}. Here is their entry: "${content}". 
-        1. Write a brief, gentle 1-2 sentence reflection back to them.
-        2. Generate 3 highly relevant, single-word tags (starting with #) based on the content.
+        ${pastContext}
+        1. Write a brief, gentle 1-2 sentence reflection back to them. If appropriate, subtly reference their past context to show you remember them.
+        2. Generate 3 highly relevant, single-word tags (starting with #) based on the current content.
         Format your response exactly like this:
         Reflection: [your reflection]
         Tags: [#tag1, #tag2, #tag3]`;
@@ -147,6 +153,50 @@ export const generateWeeklySummary = async (req: AuthRequest, res: Response): Pr
     });
     
     res.status(200).json({ summary: response.text });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const getDailyPrompt = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const lastEntry = await Entry.findOne({ userId: req.user.id }).sort({ date: -1 });
+    
+    let promptText = "How are you feeling today?";
+    if (lastEntry) {
+      const prompt = `You are the AI companion for TearBag. The user's last journal entry had the mood(s): ${lastEntry.moods?.join(', ')} and they wrote: "${lastEntry.content}". Generate a single, short, warm, and engaging question to ask them today as a daily check-in prompt based on their last entry. Do not use quotes. Maximum 1 sentence.`;
+      
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+      });
+      if (response.text) promptText = response.text.trim();
+    }
+    
+    res.status(200).json({ prompt: promptText });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const getCompanionLetter = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const entries = await Entry.find({ userId: req.user.id }).sort({ date: -1 }).limit(10);
+    
+    if (entries.length === 0) {
+      res.status(200).json({ letter: "I don't have enough memories of you yet to write a full letter. Start writing in your journal, and I'll be here waiting to support you!" });
+      return;
+    }
+
+    const journalContent = entries.map(e => `Date: ${e.date.toDateString()}. Moods: ${e.moods?.join(', ')}. Entry: ${e.content}`).join('\n\n');
+    const prompt = `You are a deeply empathetic, poetic, and supportive AI companion. Below are the user's recent journal entries. Write them a beautiful, deeply personalized, encouraging 3-4 paragraph letter. Acknowledge their specific struggles, celebrate their wins, and offer gentle wisdom. Sign off with a warm closing from "Your Companion".\n\n${journalContent}`;
+    
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+    });
+    
+    res.status(200).json({ letter: response.text });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

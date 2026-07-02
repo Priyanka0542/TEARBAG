@@ -39,6 +39,7 @@ export const Dashboard = () => {
   const [entries, setEntries] = useState<any[]>([]);
   const [quickLog, setQuickLog] = useState('');
   const [saving, setSaving] = useState(false);
+  const [dailyPrompt, setDailyPrompt] = useState("How are you feeling today?");
 
   useEffect(() => {
     const fetchEntries = async () => {
@@ -49,7 +50,18 @@ export const Dashboard = () => {
         console.error(err);
       }
     };
+    
+    const fetchPrompt = async () => {
+      try {
+        const { data } = await api.get('/entries/daily-prompt');
+        if (data.prompt) setDailyPrompt(data.prompt);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     fetchEntries();
+    fetchPrompt();
   }, []);
 
   const handleQuickSave = async () => {
@@ -111,7 +123,7 @@ export const Dashboard = () => {
 
       <section className="glass rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden group">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-        <h2 className="text-2xl md:text-3xl font-heading font-medium mb-8 text-center relative z-10">How are you feeling today?</h2>
+        <h2 className="text-2xl md:text-3xl font-heading font-medium mb-8 text-center relative z-10">{dailyPrompt}</h2>
         
         <motion.div 
           variants={containerVariants}
