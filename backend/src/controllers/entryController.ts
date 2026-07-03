@@ -46,6 +46,8 @@ export const createEntry = async (req: AuthRequest, res: Response): Promise<void
 
     let aiReflection = '';
     let tags: string[] = [];
+    let detectedEmotion = 'calm';
+    let detectedIntensity = 0.5;
     
     if (content && content.length > 20) {
       try {
@@ -57,9 +59,13 @@ export const createEntry = async (req: AuthRequest, res: Response): Promise<void
         const prompt = `You are a supportive AI companion for a journaling app. The user has just written a journal entry with the mood(s): ${moods?.join(', ') || 'neutral'}. Here is their entry: "${content}". 
         ${pastContext}
         1. Write a brief, gentle 1-2 sentence reflection back to them. If appropriate, subtly reference their past context to show you remember them.
-        2. Generate 3 highly relevant, single-word tags (starting with #) based on the current content.
-        Format your response exactly like this:
+        2. Classify the dominant emotion into EXACTLY one of: calm, joy, sadness, anger, anxiety
+        3. Rate the emotional intensity from 0.0 (very mild) to 1.0 (extremely intense)
+        4. Generate 3 highly relevant, single-word tags (starting with #) based on the current content.
+        Format your response EXACTLY like this (each on its own line):
         Reflection: [your reflection]
+        Emotion: [one of: calm, joy, sadness, anger, anxiety]
+        Intensity: [a number between 0.0 and 1.0]
         Tags: [#tag1, #tag2, #tag3]`;
         
         const response = await ai.models.generateContent({
@@ -70,10 +76,26 @@ export const createEntry = async (req: AuthRequest, res: Response): Promise<void
         const responseText = response.text || '';
         const reflectionMatch = responseText.match(/Reflection:\s*(.*)/);
         const tagsMatch = responseText.match(/Tags:\s*(.*)/);
+        const emotionMatch = responseText.match(/Emotion:\s*(.*)/);
+        const intensityMatch = responseText.match(/Intensity:\s*([\d.]+)/);
         
         if (reflectionMatch && reflectionMatch[1]) aiReflection = reflectionMatch[1].trim();
         if (tagsMatch && tagsMatch[1]) {
           tags = tagsMatch[1].split(',').map((t: string) => t.trim());
+        }
+        
+        const validEmotions = ['calm', 'joy', 'sadness', 'anger', 'anxiety'];
+        if (emotionMatch && emotionMatch[1]) {
+          const detected = emotionMatch[1].trim().toLowerCase();
+          if (validEmotions.includes(detected)) {
+            detectedEmotion = detected;
+          }
+        }
+        if (intensityMatch && intensityMatch[1]) {
+          const val = parseFloat(intensityMatch[1]);
+          if (!isNaN(val) && val >= 0 && val <= 1) {
+            detectedIntensity = val;
+          }
         }
       } catch (err) {
         console.error('AI Reflection Error:', err);
@@ -89,6 +111,8 @@ export const createEntry = async (req: AuthRequest, res: Response): Promise<void
       unlockDate,
       tags,
       imageUrl,
+      emotion: detectedEmotion,
+      emotionIntensity: detectedIntensity,
     });
     const createdEntry = await entry.save();
     res.status(201).json(createdEntry);

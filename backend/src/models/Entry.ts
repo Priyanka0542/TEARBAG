@@ -12,6 +12,8 @@ const entrySchema = new mongoose.Schema(
     imageUrl: { type: String, default: null },
     isShared: { type: Boolean, default: false },
     hugs: { type: Number, default: 0 },
+    emotion: { type: String, default: 'calm' },
+    emotionIntensity: { type: Number, default: 0.5 },
     date: { type: Date, default: Date.now },
   },
   { timestamps: true }

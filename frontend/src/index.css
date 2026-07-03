@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: var(--color-background);
-  --color-foreground: var(--color-foreground);
+  --color-background: #09090b;
+  --color-foreground: #fafafa;
   
-  --color-primary: var(--color-primary);
+  --color-primary: #8b5cf6;
   --color-primary-foreground: #ffffff;
   
-  --color-card: var(--color-card);
-  --color-card-foreground: var(--color-card-foreground);
+  --color-card: rgba(24, 24, 27, 0.6);
+  --color-card-foreground: #fafafa;
 
-  --color-border: var(--color-border);
-  --color-muted: var(--color-muted);
-  --color-muted-foreground: var(--color-muted-foreground);
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-muted: rgba(39, 39, 42, 0.6);
+  --color-muted-foreground: #a1a1aa;
 
   --font-sans: 'Inter', sans-serif;
   --font-heading: 'Outfit', sans-serif;
@@ -24,51 +24,20 @@
 
 @layer base {
   :root {
-    --color-background: #f8fafc;
-    --color-foreground: #09090b;
-    --color-primary: #7c3aed;
-    --color-card: rgba(255, 255, 255, 0.7);
-    --color-card-foreground: #09090b;
-    --color-border: rgba(0, 0, 0, 0.08);
-    --color-muted: #f1f5f9;
-    --color-muted-foreground: #64748b;
+    /* Emotion theme variables (overwritten dynamically by JS) */
+    --theme-primary: #F6C445;
+    --theme-glow: rgba(246, 196, 69, 0.3);
+    --theme-particle: #FDE68A;
+    --theme-bg-start: rgba(246, 196, 69, 0.15);
+    --theme-bg-end: rgba(180, 140, 50, 0.08);
+    --theme-orb-color: #F6C445;
+    --theme-intensity: 0.5;
+
+    color-scheme: dark;
   }
 
-  .dark {
-    --color-background: #09090b;
-    --color-foreground: #fafafa;
-    --color-primary: #8b5cf6;
-    --color-card: rgba(24, 24, 27, 0.6);
-    --color-card-foreground: #fafafa;
-    --color-border: rgba(255, 255, 255, 0.08);
-    --color-muted: rgba(39, 39, 42, 0.6);
-    --color-muted-foreground: #a1a1aa;
-  }
-}
-
-@layer base {
   * {
     @apply border-border;
-  }
-  @keyframes orb-float-1 {
-    0% { transform: translate(0, 0) scale(1); opacity: 0.5; }
-    33% { transform: translate(15vw, 15vh) scale(1.2); opacity: 0.8; }
-    66% { transform: translate(-10vw, 20vh) scale(0.9); opacity: 0.6; }
-    100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
-  }
-
-  @keyframes orb-float-2 {
-    0% { transform: translate(0, 0) scale(1); opacity: 0.4; }
-    33% { transform: translate(-20vw, -15vh) scale(1.3); opacity: 0.7; }
-    66% { transform: translate(15vw, -25vh) scale(0.8); opacity: 0.5; }
-    100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
-  }
-
-  @keyframes orb-float-3 {
-    0% { transform: translate(0, 0) scale(1); opacity: 0.6; }
-    33% { transform: translate(25vw, -10vh) scale(0.9); opacity: 0.4; }
-    66% { transform: translate(-15vw, 15vh) scale(1.4); opacity: 0.8; }
-    100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
   }
 
   body {
@@ -76,48 +45,6 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     overflow-x: hidden;
   }
-  
-  /* Breathtaking Global Ambient Background */
-  body::before, body::after, #root::before {
-    content: '';
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(140px);
-    z-index: -1;
-    pointer-events: none;
-    mix-blend-mode: screen;
-  }
-
-  body::before {
-    width: 60vw;
-    height: 60vw;
-    top: -10vw;
-    left: -10vw;
-    background: radial-gradient(circle, rgba(124, 58, 237, 0.4) 0%, transparent 70%);
-    animation: orb-float-1 25s infinite ease-in-out;
-  }
-
-  body::after {
-    width: 50vw;
-    height: 50vw;
-    bottom: -5vw;
-    right: -10vw;
-    background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%);
-    animation: orb-float-2 30s infinite ease-in-out reverse;
-  }
-
-  #root::before {
-    width: 40vw;
-    height: 40vw;
-    top: 30vh;
-    left: 30vw;
-    background: radial-gradient(circle, rgba(56, 189, 248, 0.3) 0%, transparent 70%);
-    animation: orb-float-3 20s infinite ease-in-out;
-  }
-
-  .dark body::before { background: radial-gradient(circle, rgba(124, 58, 237, 0.25) 0%, transparent 70%); mix-blend-mode: color-dodge; }
-  .dark body::after { background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, transparent 70%); mix-blend-mode: color-dodge; }
-  .dark #root::before { background: radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, transparent 70%); mix-blend-mode: color-dodge; }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading tracking-tight;
@@ -126,12 +53,32 @@
 
 @layer utilities {
   .glass {
-    @apply bg-card/60 backdrop-blur-[30px] border border-white/20 dark:border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)];
-    box-shadow: inset 0 1px 1px rgba(255,255,255,0.3), 0 8px 32px rgba(0,0,0,0.1);
+    background: rgba(24, 24, 27, 0.5);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.4);
   }
   
-  .dark .glass {
-    box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 8px 32px rgba(0,0,0,0.4);
+  .glass-strong {
+    background: rgba(24, 24, 27, 0.7);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 12px 40px rgba(0,0,0,0.5);
   }
+}
 
+/* Smooth emotion theme transitions */
+body, #root {
+  transition: background-color 1.5s ease, color 0.5s ease;
+}
+
+/* Reduced motion: disable all particle/physics animations */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.3s !important;
+  }
 }

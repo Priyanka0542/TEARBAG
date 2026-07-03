@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store/useStore';
+import { useEmotionStore } from '../store/useEmotionStore';
+import { moodToEmotion, type Emotion } from '../lib/emotionThemes';
 import { format } from 'date-fns';
 import { Sparkles, Quote, Archive, Save, Loader2, Lock } from 'lucide-react';
 import { api } from '../lib/api';
+import { EmotionOrb } from '../components/EmotionOrb';
 
 const moods = [
   { emoji: '😊', label: 'Happy' },
@@ -32,85 +35,9 @@ const itemVariants = {
   show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', bounce: 0.4 } }
 };
 
-const WeatherEffect = ({ mood }: { mood: string | null }) => {
-  if (!mood) return null;
-  
-  if (mood === 'Sad' || mood === 'Crying' || mood === 'Lonely') {
-    // Rain Effect
-    return (
-      <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden opacity-30">
-        <div className="absolute inset-0 bg-blue-900/10" />
-        {Array.from({ length: 50 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-[1px] h-10 bg-blue-400/50"
-            initial={{ top: -50, left: `${Math.random() * 100}vw`, opacity: 0 }}
-            animate={{ 
-              top: '100vh', 
-              opacity: [0, 1, 1, 0],
-              left: `${(Math.random() - 0.5) * 20 + (Math.random() * 100)}vw` // Slight wind
-            }}
-            transition={{ 
-              duration: 1 + Math.random(), 
-              repeat: Infinity, 
-              delay: Math.random() * 2,
-              ease: 'linear'
-            }}
-          />
-        ))}
-      </div>
-    );
-  }
-  
-  if (mood === 'Happy' || mood === 'Excited' || mood === 'Loved') {
-    // Sun Rays Effect
-    return (
-      <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden opacity-40">
-        <div className="absolute inset-0 bg-yellow-500/5 mix-blend-overlay" />
-        {Array.from({ length: 8 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute top-0 w-64 h-[200vh] bg-gradient-to-b from-yellow-300/20 to-transparent blur-3xl transform -rotate-45 origin-top-left"
-            initial={{ left: `${i * 15}vw`, opacity: 0.3 }}
-            animate={{ opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 4 + Math.random() * 4, repeat: Infinity, ease: 'easeInOut' }}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  if (mood === 'Anxious' || mood === 'Angry') {
-    // Stormy / Fast particles
-    return (
-      <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden opacity-20">
-        <div className="absolute inset-0 bg-red-900/10" />
-        {Array.from({ length: 30 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-red-500/30 rounded-full blur-sm"
-            initial={{ top: `${Math.random() * 100}vh`, left: `${Math.random() * 100}vw`, scale: Math.random() }}
-            animate={{ 
-              top: [`${Math.random() * 100}vh`, `${Math.random() * 100}vh`],
-              left: [`${Math.random() * 100}vw`, `${Math.random() * 100}vw`],
-            }}
-            transition={{ 
-              duration: 3 + Math.random() * 2, 
-              repeat: Infinity,
-              repeatType: 'mirror',
-              ease: 'easeInOut'
-            }}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  return null;
-};
-
 export const Dashboard = () => {
   const { user } = useStore();
+  const { setEmotion } = useEmotionStore();
   const today = format(new Date(), 'EEEE, MMMM do');
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [entries, setEntries] = useState<any[]>([]);
@@ -123,6 +50,11 @@ export const Dashboard = () => {
       try {
         const { data } = await api.get('/entries');
         setEntries(data);
+        
+        // Set emotion from latest entry
+        if (data.length > 0 && data[0].emotion) {
+          setEmotion(data[0].emotion as Emotion, data[0].emotionIntensity ?? 0.5);
+        }
       } catch (err) {
         console.error(err);
       }
@@ -139,7 +71,18 @@ export const Dashboard = () => {
 
     fetchEntries();
     fetchPrompt();
-  }, []);
+  }, [setEmotion]);
+
+  const handleMoodSelect = (moodLabel: string) => {
+    const newMood = selectedMood === moodLabel ? null : moodLabel;
+    setSelectedMood(newMood);
+    
+    // Drive emotion theme from mood selection
+    if (newMood) {
+      const emotion = moodToEmotion[newMood] || 'calm';
+      setEmotion(emotion, 0.7);
+    }
+  };
 
   const handleQuickSave = async () => {
     if (!quickLog.trim() || !selectedMood) return;
@@ -152,6 +95,12 @@ export const Dashboard = () => {
       });
       setEntries([data, ...entries]);
       setQuickLog('');
+      
+      // Update emotion from AI response
+      if (data.emotion) {
+        setEmotion(data.emotion as Emotion, data.emotionIntensity ?? 0.5);
+      }
+      
       setSelectedMood(null);
     } catch (err) {
       console.error(err);
@@ -163,8 +112,10 @@ export const Dashboard = () => {
   const filteredEntries = selectedMood 
     ? entries.filter(e => e.moods.includes(selectedMood))
     : entries;
-    
-  const latestMood = entries.length > 0 && entries[0].moods?.length > 0 ? entries[0].moods[0] : null;
+
+  // Get time-appropriate greeting
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
 
   return (
     <motion.div 
@@ -174,16 +125,16 @@ export const Dashboard = () => {
       transition={{ duration: 0.6 }}
       className="space-y-12 w-full relative"
     >
-      <WeatherEffect mood={latestMood} />
-      
-      <header className="pt-8">
+      <header className="pt-8 flex items-center gap-8">
+        <EmotionOrb />
+        <div>
         <motion.h1 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="text-4xl md:text-5xl font-heading font-semibold tracking-tight mb-3 flex items-center gap-3"
         >
-          Good Morning, {user?.name.split(' ')[0]} 
+          {greeting}, {user?.name.split(' ')[0]} 
           <motion.span 
             animate={{ rotate: [0, 14, -8, 14, -4, 10, 0, 0] }} 
             transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 5 }}
@@ -200,6 +151,7 @@ export const Dashboard = () => {
         >
           {today} <span className="w-1 h-1 rounded-full bg-border inline-block" /> <span className="text-primary font-medium flex items-center gap-1"><Sparkles className="w-4 h-4" /> 1 Day Streak</span>
         </motion.p>
+        </div>
       </header>
 
       <section className="glass rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden group">
@@ -220,8 +172,8 @@ export const Dashboard = () => {
                 whileHover={{ scale: 1.15, y: -8, rotate: [-2, 2, -2, 0] }}
                 whileTap={{ scale: 0.9 }}
                 key={mood.label}
-                onClick={() => setSelectedMood(isSelected ? null : mood.label)}
-                className={`flex flex-col items-center justify-center p-4 rounded-3xl border transition-all duration-300 w-24 h-24 relative overflow-hidden ${isSelected ? 'bg-primary/20 border-primary shadow-[0_0_40px_-10px_rgba(124,58,237,0.5)] ring-2 ring-primary/50' : 'bg-background/40 border-border hover:border-primary/50 hover:bg-background/60 hover:shadow-lg'}`}
+                onClick={() => handleMoodSelect(mood.label)}
+                className={`flex flex-col items-center justify-center p-4 rounded-3xl border transition-all duration-300 w-24 h-24 relative overflow-hidden cursor-pointer ${isSelected ? 'bg-primary/20 border-primary shadow-[0_0_40px_-10px_rgba(124,58,237,0.5)] ring-2 ring-primary/50' : 'bg-background/40 border-border hover:border-primary/50 hover:bg-background/60 hover:shadow-lg'}`}
               >
                 {isSelected && (
                   <motion.div 
