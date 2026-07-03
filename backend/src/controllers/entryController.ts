@@ -2,6 +2,7 @@ import { Response } from 'express';
 import Entry from '../models/Entry';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { GoogleGenAI } from '@google/genai';
+import { format } from 'date-fns';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
 
