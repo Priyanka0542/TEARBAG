@@ -123,7 +123,7 @@ export const Dashboard = () => {
       animate={{ opacity: 1, filter: 'blur(0px)' }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.6 }}
-      className="space-y-12 w-full relative"
+      className="space-y-12 w-full relative pt-24"
     >
       <header className="pt-8 flex items-center gap-8">
         <EmotionOrb />

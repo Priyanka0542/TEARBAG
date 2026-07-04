@@ -50,7 +50,7 @@ const TreeGraphic = ({ streak }: { streak: number }) => {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-end h-full">
+    <div className="relative flex flex-col items-center justify-end h-full gap-6">
       <ParticleBurst active={true} count={particles} color={streak >= 7 ? 'bg-pink-400' : 'bg-emerald-400'} />
       
       {/* Tree Glow */}
@@ -70,9 +70,9 @@ const TreeGraphic = ({ streak }: { streak: number }) => {
         {streak >= 4 && <div className={`w-4 bg-emerald-900/80 rounded-full mt-[-10px] z-0 ${streak >= 7 ? 'h-32 w-8' : 'h-16'}`} />}
       </motion.div>
 
-      <div className="absolute -bottom-12 text-center">
+      <div className="text-center relative z-10">
         <p className="text-xl font-heading font-medium text-foreground drop-shadow-md">{label}</p>
-        <p className="text-sm text-primary/80 font-semibold">{streak} Day Streak</p>
+        <p className="text-sm text-primary/80 font-semibold mt-1">{streak} Day Streak</p>
       </div>
     </div>
   );

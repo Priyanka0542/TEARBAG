@@ -183,7 +183,7 @@ export const Analytics = () => {
             <h3 className="text-xl font-heading font-semibold text-primary">Weekly AI Summary</h3>
           </div>
           
-          <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+          <div className="flex-1 mt-2">
             {loadingSummary ? (
               <div className="h-full flex flex-col items-center justify-center gap-4">
                 <Loader2 className="w-8 h-8 text-primary animate-spin" />
