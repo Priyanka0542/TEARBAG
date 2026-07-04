@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { Backpack as BackpackIcon, Search, Lock, Sparkles, Filter, X, Globe } from 'lucide-react';
@@ -109,6 +110,17 @@ export const Backpack = () => {
       {loading ? (
         <div className="min-h-[40vh] flex items-center justify-center">
           <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+      ) : entries.length === 0 ? (
+        <div className="glass rounded-[3rem] p-12 text-center flex flex-col items-center justify-center min-h-[40vh]">
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+            <BackpackIcon className="w-10 h-10 text-primary/40" />
+          </div>
+          <h3 className="text-2xl font-heading font-medium mb-2">Your backpack is empty</h3>
+          <p className="text-muted-foreground mb-6">You haven't logged any memories yet.</p>
+          <Link to="/journal" className="px-6 py-3 bg-primary text-primary-foreground rounded-full font-medium hover:bg-primary/90 transition-colors">
+            Write your first entry
+          </Link>
         </div>
       ) : filteredEntries.length === 0 ? (
         <div className="glass rounded-[3rem] p-12 text-center flex flex-col items-center justify-center min-h-[40vh]">

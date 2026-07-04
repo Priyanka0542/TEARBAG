@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, Float } from '@react-three/drei';
@@ -114,6 +115,23 @@ export const Galaxy = () => {
     return (
       <div className="min-h-[80vh] flex items-center justify-center bg-black">
         <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (entries.length === 0) {
+    return (
+      <div className="fixed inset-0 w-screen h-screen bg-[#020208] z-0 flex flex-col items-center justify-center text-center">
+        <Sparkles className="w-16 h-16 text-white/20 mb-6" />
+        <h1 className="text-3xl font-heading font-medium text-white mb-2 drop-shadow-2xl">
+          Your galaxy is empty
+        </h1>
+        <p className="text-white/50 mb-8">
+          The stars are waiting for your first memory.
+        </p>
+        <Link to="/journal" className="px-6 py-3 bg-white/10 text-white rounded-full font-medium hover:bg-white/20 transition-colors backdrop-blur-md">
+          Create a star
+        </Link>
       </div>
     );
   }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { Sprout, Flower2, Droplets, Sun } from 'lucide-react';
@@ -85,8 +86,11 @@ export const Garden = () => {
             <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6">
               <Sprout className="w-12 h-12 text-emerald-500/50" />
             </div>
-            <p className="text-xl font-medium text-foreground">Your garden is bare right now.</p>
-            <p className="text-muted-foreground mt-2">Log a happy or grateful memory to plant your first seed.</p>
+            <p className="text-xl font-medium text-foreground mb-2">Your garden is bare right now.</p>
+            <p className="text-muted-foreground mb-6">Log a happy or grateful memory to plant your first seed.</p>
+            <Link to="/journal" className="px-6 py-3 bg-emerald-500/20 text-emerald-500 rounded-full font-medium hover:bg-emerald-500/30 transition-colors">
+              Plant a seed
+            </Link>
           </div>
         ) : (
           <div className="flex-1 flex flex-wrap gap-8 items-end justify-center pb-12 pt-20 relative">

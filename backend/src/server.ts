@@ -37,13 +37,17 @@ app.get('/api/health', (req, res) => {
 
 // Connect to DB and Start Server
 mongoose
-  .connect(process.env.MONGO_URI || '')
+  .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/tearbag_test')
   .then(() => {
     console.log('Connected to MongoDB');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+    if (process.env.NODE_ENV !== 'test') {
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+      });
+    }
   })
   .catch((err) => {
     console.error('Failed to connect to MongoDB', err);
   });
+
+export default app;

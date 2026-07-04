@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { Globe, Heart, Search } from 'lucide-react';
@@ -73,11 +74,20 @@ export const Community = () => {
         <div className="flex items-center justify-center py-20">
           <div className="w-8 h-8 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
         </div>
+      ) : entries.length === 0 ? (
+        <div className="glass rounded-[3rem] p-12 text-center flex flex-col items-center justify-center min-h-[30vh]">
+          <Globe className="w-16 h-16 text-blue-500/20 mb-4" />
+          <h3 className="text-2xl font-heading font-medium mb-2">No entries yet</h3>
+          <p className="text-muted-foreground mb-6">The community is quiet right now. Be the first to share.</p>
+          <Link to="/journal" className="px-6 py-3 bg-blue-500/10 text-blue-500 rounded-full font-medium hover:bg-blue-500/20 transition-colors">
+            Share a memory
+          </Link>
+        </div>
       ) : filteredEntries.length === 0 ? (
         <div className="glass rounded-[3rem] p-12 text-center flex flex-col items-center justify-center min-h-[30vh]">
           <Globe className="w-16 h-16 text-blue-500/20 mb-4" />
           <h3 className="text-2xl font-heading font-medium mb-2">No entries found</h3>
-          <p className="text-muted-foreground">The community is quiet right now.</p>
+          <p className="text-muted-foreground">Try a different search term.</p>
         </div>
       ) : (
         <div className="space-y-6">
