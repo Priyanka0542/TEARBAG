@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useEmotionStore } from '../store/useEmotionStore';
 import { emotionThemes } from '../lib/emotionThemes';

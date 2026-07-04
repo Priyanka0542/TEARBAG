@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { BookHeart, LogOut, Home, PenTool, Sprout, Backpack, BarChart, Bot, Sparkles, Globe, Wind } from 'lucide-react';
 import { useStore } from '../../store/useStore';

@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import jwt from 'jwt-simple'; // We'll just use jsonwebtoken but let's use the proper import
-// Wait, I installed jsonwebtoken. Let's use jsonwebtoken
-import jwtToken from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import User from '../models/User';
 
 export const register = async (req: Request, res: Response): Promise<void> => {
@@ -26,7 +24,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
     await user.save();
 
-    const token = jwtToken.sign({ id: user._id }, process.env.JWT_SECRET || 'secret', {
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
       expiresIn: '7d',
     });
 
@@ -52,7 +50,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const token = jwtToken.sign({ id: user._id }, process.env.JWT_SECRET || 'secret', {
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
       expiresIn: '7d',
     });
 

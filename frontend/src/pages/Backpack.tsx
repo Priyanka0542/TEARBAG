@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { Backpack as BackpackIcon, Search, Lock, Sparkles, Filter, X, Globe } from 'lucide-react';

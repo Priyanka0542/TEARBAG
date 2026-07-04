@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, Float } from '@react-three/drei';
@@ -91,7 +91,6 @@ export const Galaxy = () => {
 
     for (let i = 0; i < entries.length; i++) {
       const distance = Math.random() * 20; 
-      const angle = Math.random() * 2 * Math.PI; 
       
       const armOffset = Math.random() * armOffsetMax;
       const armAngle = (Math.floor(Math.random() * arms) * armSeparationDistance) + armOffset;
@@ -155,7 +154,7 @@ export const Galaxy = () => {
           ))}
         </group>
         
-        <EffectComposer disableNormalPass>
+        <EffectComposer enableNormalPass={false}>
           <Bloom luminanceThreshold={0.1} mipmapBlur intensity={1.5} />
         </EffectComposer>
         
