@@ -205,7 +205,7 @@ export const Dashboard = () => {
               exit={{ opacity: 0, height: 0, marginTop: 0 }}
               className="w-full max-w-2xl mx-auto overflow-hidden relative z-10"
             >
-              <div className="bg-background/50 border border-primary/20 rounded-[2rem] p-6 shadow-xl shadow-primary/5 flex flex-col gap-4">
+              <div className="anime-hud rounded-[2rem] p-6 shadow-xl shadow-primary/5 flex flex-col gap-4">
                 <p className="font-heading text-lg font-medium text-foreground">
                   What's making you feel {selectedMood.toLowerCase()} today?
                 </p>
@@ -217,11 +217,9 @@ export const Dashboard = () => {
                     className="w-full bg-background/50 border border-border rounded-xl p-4 pb-14 min-h-[120px] resize-none focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 text-base font-light placeholder:text-muted-foreground/50 transition-all"
                   />
                   <motion.button 
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
                     onClick={handleQuickSave}
                     disabled={saving || !quickLog.trim()}
-                    className="absolute bottom-3 right-3 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:hover:bg-primary transition-all flex items-center justify-center shadow-lg shadow-primary/20 gap-2 font-medium text-sm cursor-pointer"
+                    className="anime-btn absolute bottom-3 right-3 bg-primary text-primary-foreground px-4 py-2 rounded-lg disabled:opacity-50 disabled:hover:bg-primary transition-all flex items-center justify-center shadow-lg shadow-primary/20 gap-2 font-medium text-sm cursor-pointer"
                   >
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     Lock in Vault

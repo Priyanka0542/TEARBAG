@@ -92,6 +92,36 @@
     color: transparent;
     filter: drop-shadow(0 0 15px rgba(167, 139, 250, 0.4));
   }
+
+  .anime-hud {
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.1), inset 0 0 20px rgba(56, 189, 248, 0.05);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.6), rgba(30, 58, 138, 0.2));
+  }
+
+  .anime-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .anime-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: skewX(-20deg);
+    transition: all 0.5s ease;
+  }
+  
+  .anime-btn:hover::before {
+    left: 150%;
+  }
+  
+  .anime-btn:hover {
+    box-shadow: 0 0 20px rgba(232, 121, 249, 0.5);
+    transform: translateY(-2px) scale(1.02);
+  }
 }
 
 /* Smooth emotion theme transitions */
