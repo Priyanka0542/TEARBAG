@@ -107,8 +107,8 @@ export const Garden = () => {
       <div className="absolute bottom-0 left-0 w-[500px] h-[300px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
       
       <header className="mb-12 relative z-10 text-center">
-        <h1 className="text-4xl md:text-5xl font-heading font-medium flex items-center justify-center gap-4 text-emerald-400 drop-shadow-lg">
-          <Sprout className="w-10 h-10" />
+        <h1 className="text-4xl md:text-5xl font-heading font-medium flex items-center justify-center gap-4 anime-title">
+          <Sprout className="w-10 h-10 text-emerald-400 drop-shadow-lg" />
           The Tree of Life
         </h1>
         <p className="text-muted-foreground mt-4 text-lg max-w-2xl mx-auto">

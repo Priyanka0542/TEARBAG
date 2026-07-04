@@ -60,7 +60,7 @@ export const Analytics = () => {
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-pink-500/10 rounded-full blur-[120px] -z-10 pointer-events-none mix-blend-screen" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] -z-10 pointer-events-none mix-blend-screen" />
 
-      <h1 className="text-4xl md:text-5xl font-heading font-medium flex items-center gap-4 mb-10">
+      <h1 className="text-4xl md:text-5xl font-heading font-medium flex items-center gap-4 mb-10 anime-title">
         <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
           <BarChartIcon className="w-7 h-7 text-primary" />
         </div>

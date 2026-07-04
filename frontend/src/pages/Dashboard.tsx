@@ -132,7 +132,7 @@ export const Dashboard = () => {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-4xl md:text-5xl font-heading font-semibold tracking-tight mb-3 flex items-center gap-3"
+          className="text-4xl md:text-5xl font-heading font-semibold tracking-tight mb-3 flex items-center gap-3 anime-title"
         >
           {greeting}, {user?.name.split(' ')[0]} 
           <motion.span 

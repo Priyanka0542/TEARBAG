@@ -50,8 +50,8 @@ export const Community = () => {
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px] -z-10 pointer-events-none mix-blend-screen" />
       
       <header className="mb-12 text-center">
-        <h1 className="text-4xl md:text-5xl font-heading font-medium flex items-center justify-center gap-4 mb-4 text-blue-500 dark:text-blue-400">
-          <Globe className="w-10 h-10" />
+        <h1 className="text-4xl md:text-5xl font-heading font-medium flex items-center justify-center gap-4 mb-4 anime-title">
+          <Globe className="w-10 h-10 text-blue-400 drop-shadow-[0_0_15px_rgba(96,165,250,0.6)]" />
           Empathy Community
         </h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">

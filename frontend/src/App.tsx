@@ -16,9 +16,9 @@ import { Community } from './pages/Community';
 import { Breathe } from './pages/Breathe';
 import { AmbientSound } from './components/AmbientSound';
 import { NotFound } from './pages/NotFound';
-
 import { AnimatePresence, motion } from 'framer-motion';
 import { GlobalParticles } from './components/GlobalParticles';
+import { SpiritGuide } from './components/SpiritGuide';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useStore();
@@ -275,6 +275,7 @@ function App() {
     <Router>
       <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 relative">
         <GlobalParticles />
+        <SpiritGuide />
         <EmotionEnvironment />
         <Navbar />
         <AmbientSound />
