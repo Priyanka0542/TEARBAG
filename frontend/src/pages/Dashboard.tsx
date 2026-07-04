@@ -115,7 +115,7 @@ export const Dashboard = () => {
 
   // Get time-appropriate greeting
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
+  const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : hour < 21 ? 'Good Evening' : 'Good Night';
 
   return (
     <motion.div 
@@ -123,9 +123,9 @@ export const Dashboard = () => {
       animate={{ opacity: 1, filter: 'blur(0px)' }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.6 }}
-      className="space-y-12 w-full relative pt-24"
+      className="space-y-12 w-full relative pt-12"
     >
-      <header className="pt-8 flex items-center gap-8">
+      <header className="pt-2 flex items-center gap-8">
         <EmotionOrb />
         <div>
         <motion.h1 
