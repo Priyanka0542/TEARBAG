@@ -19,6 +19,7 @@ import { NotFound } from './pages/NotFound';
 import { AnimatePresence, motion } from 'framer-motion';
 import { GlobalParticles } from './components/GlobalParticles';
 import { SpiritGuide } from './components/SpiritGuide';
+import { BackgroundWorld } from './components/BackgroundWorld';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useStore();
@@ -273,7 +274,8 @@ const AnimatedRoutes = () => {
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 relative">
+      <div className="min-h-screen text-foreground selection:bg-primary/30 relative z-0">
+        <BackgroundWorld />
         <GlobalParticles />
         <SpiritGuide />
         <EmotionEnvironment />
