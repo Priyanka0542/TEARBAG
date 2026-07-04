@@ -15,6 +15,7 @@ import { Galaxy } from './pages/Galaxy';
 import { Community } from './pages/Community';
 import { Breathe } from './pages/Breathe';
 import { AmbientSound } from './components/AmbientSound';
+import { NotFound } from './pages/NotFound';
 
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -262,6 +263,7 @@ const AnimatedRoutes = () => {
             </ProtectedRoute>
           } 
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
   );
