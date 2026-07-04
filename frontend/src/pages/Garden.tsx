@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { format } from 'date-fns';
+import { motion } from 'framer-motion';
 import { Sprout, Flower2, Droplets, Sun } from 'lucide-react';
 import { api } from '../lib/api';
 

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, Float } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
-import { Maximize2 } from 'lucide-react';
+import { Maximize2, Sparkles } from 'lucide-react';
 import { api } from '../lib/api';
 import { format } from 'date-fns';
 
