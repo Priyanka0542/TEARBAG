@@ -236,33 +236,32 @@ export const Dashboard = () => {
           animate={{ y: [0, -8, 0] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
           whileHover={{ scale: 1.02 }}
-          className="glass rounded-[2.5rem] p-8 h-72 flex flex-col justify-between relative overflow-hidden group hover:shadow-2xl hover:shadow-primary/20"
+          className="glass holo-card rounded-[2.5rem] p-8 min-h-[20rem] h-auto flex flex-col justify-between relative overflow-hidden group hover:shadow-2xl hover:shadow-primary/20"
         >
           <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/20 blur-[80px] rounded-full group-hover:bg-primary/30 transition-colors duration-700" />
           <h3 className="text-xl font-heading font-medium text-muted-foreground flex items-center gap-2">
             <Quote className="w-5 h-5 text-primary/50" />
             Inspirational Quote
           </h3>
-          <blockquote className="text-2xl md:text-3xl font-heading font-light leading-tight text-foreground z-10 relative">
+          <blockquote className="text-xl md:text-2xl font-heading font-light leading-relaxed text-foreground z-10 relative mt-4 mb-2">
             <span className="text-primary/40 absolute -left-4 -top-4 text-6xl select-none">"</span>
             The emotion that can break your heart is sometimes the very one that heals it...
           </blockquote>
-          <p className="text-sm text-muted-foreground text-right z-10 font-medium">- Nicholas Sparks</p>
+          <p className="text-sm text-muted-foreground text-right z-10 font-medium mt-auto">- Nicholas Sparks</p>
         </motion.div>
 
         <motion.div 
           animate={{ y: [0, -8, 0] }}
           transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           whileHover={{ scale: 1.02 }}
-          className="glass rounded-[2.5rem] p-8 h-72 flex flex-col justify-between relative overflow-hidden group hover:shadow-2xl hover:shadow-pink-500/20"
+          className="glass holo-card rounded-[2.5rem] p-8 min-h-[20rem] h-auto flex flex-col justify-between relative overflow-hidden group hover:shadow-2xl hover:shadow-pink-500/20"
         >
           <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-pink-500/10 blur-[80px] rounded-full group-hover:bg-pink-500/20 transition-colors duration-700" />
           <h3 className="text-xl font-heading font-medium text-muted-foreground flex items-center gap-2 shrink-0">
             <Archive className="w-5 h-5 text-pink-400/50" />
             Recent Memories
           </h3>
-          
-          <div className="flex-1 w-full flex flex-col z-10 overflow-y-auto pr-2 gap-3 mt-4" style={{ scrollbarWidth: 'thin' }}>
+          <div className="flex-1 w-full flex flex-col z-10 overflow-y-auto pr-2 gap-4 mt-6" style={{ scrollbarWidth: 'thin' }}>
             {filteredEntries.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-muted-foreground font-light text-center">
                 <div className="w-16 h-16 rounded-full bg-border/50 flex items-center justify-center mb-4">

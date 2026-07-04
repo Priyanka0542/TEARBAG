@@ -1,10 +1,10 @@
 import { Response } from 'express';
 import Entry from '../models/Entry';
 import { AuthRequest } from '../middleware/authMiddleware';
-import { GoogleGenAI } from '@google/genai';
+import Groq from 'groq-sdk';
 import { format } from 'date-fns';
 
-const getAI = () => new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
+const getAI = () => new Groq({ apiKey: process.env.GROQ_API_KEY as string });
 
 export const getEntries = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -68,12 +68,12 @@ export const createEntry = async (req: AuthRequest, res: Response): Promise<void
         Intensity: [a number between 0.0 and 1.0]
         Tags: [#tag1, #tag2, #tag3]`;
         
-        const response = await getAI().models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt,
+        const response = await getAI().chat.completions.create({
+          model: 'llama-3.1-8b-instant',
+          messages: [{ role: 'user', content: prompt }],
         });
         
-        const responseText = response.text || '';
+        const responseText = response.choices[0]?.message?.content || '';
         const reflectionMatch = responseText.match(/Reflection:\s*(.*)/);
         const tagsMatch = responseText.match(/Tags:\s*(.*)/);
         const emotionMatch = responseText.match(/Emotion:\s*(.*)/);
@@ -186,15 +186,15 @@ Highlight their growth or give gentle advice on navigating their feelings.
 Journal History:
 ${journalContent}`;
     
-    const response = await getAI().models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
+    const response = await getAI().chat.completions.create({
+      model: 'llama-3.1-8b-instant',
+      messages: [{ role: 'user', content: prompt }],
     });
     
-    res.status(200).json({ summary: response.text });
+    res.status(200).json({ summary: response.choices[0]?.message?.content });
   } catch (error) {
     console.error('Error generating weekly summary:', error);
-    res.status(500).json({ message: 'AI generation failed. Please check if the Gemini API key is configured correctly.' });
+    res.status(500).json({ message: 'AI generation failed. Please check if the Groq API key is configured correctly.' });
   }
 };
 
@@ -209,11 +209,12 @@ The user's last journal entry had the mood(s): ${lastEntry.moods?.join(', ')} an
 Generate exactly ONE short, beautiful, and incredibly simple question to ask them today as a check-in. 
 Do not use big words. Make it feel like a warm, safe hug. Do not use quotes. Maximum 1 sentence.`;
       
-      const response = await getAI().models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: prompt,
+      const response = await getAI().chat.completions.create({
+        model: 'llama-3.1-8b-instant',
+        messages: [{ role: 'user', content: prompt }],
       });
-      if (response.text) promptText = response.text.trim();
+      const resText = response.choices[0]?.message?.content;
+      if (resText) promptText = resText.trim();
     }
     
     res.status(200).json({ prompt: promptText });
@@ -232,28 +233,42 @@ export const getCompanionLetter = async (req: AuthRequest, res: Response): Promi
       pastContext = entries.map(e => `[${format(new Date(e.date), 'MMM d, yyyy')} - Mood: ${e.moods?.join(', ')}] ${e.content}`).join('\n\n');
     }
 
-    const prompt = `You are a gentle, wise spirit in a magical anime-like world called TearBag.
+    const { guide } = req.query;
+    let personalityContext = `You are a gentle, wise spirit in a magical anime-like world called TearBag.`;
+    
+    if (guide === 'tanjiro') {
+      personalityContext = `Adopt the persona of a young, heroic swordsman with infinite empathy, warmth, and resilience. You speak gently, with a heart as warm as the sun, and you comfort the user like they are your own family.`;
+    } else if (guide === 'rengoku') {
+      personalityContext = `Adopt the persona of a blazing, heroic swordsman known for his fiery passion. You are blazing with motivation, positivity, and an unyielding belief in the user. You speak loudly (metaphorically) but warmly, telling them to 'set their heart ablaze' and keep moving forward.`;
+    } else if (guide === 'giyu') {
+      personalityContext = `Adopt the persona of a stoic, quiet swordsman associated with water. You are quiet, stoic, but deeply understanding. You know what it feels like to carry heavy emotional burdens and guilt. Guide them to find 'still water' and peace. Keep it brief and profound.`;
+    } else if (guide === 'shinobu') {
+      personalityContext = `Adopt the persona of a graceful, soft-spoken swordswoman associated with butterflies. You offer gentle guidance with a polite smile, but you have a deep, hidden empathy for emotional pain and anger. You are graceful, slightly teasing, but incredibly caring.`;
+    }
+
+    const prompt = `${personalityContext}
 Below is the user's recent journal history.
 Read their journey, and write a personalized, incredibly beautiful, and poetic 3-paragraph letter to them.
 Use extremely simple, soft, and warm language. Do not use big words.
 Make them feel deeply loved, safe, and understood—like receiving a warm hug on a rainy day.
-End the letter with a beautiful, simple metaphor about the stars, rain, seasons, or glowing trees.
-Do not mention that you are an AI or reading from a database.
+End the letter with a beautiful, simple metaphor.
+Do not explicitly say your name or that you are from Demon Slayer, just embody the soul and phrases of the character.
+Do not mention that you are an AI.
 
 Journal History:
 ${pastContext}
 
 Write the letter now:`;
 
-    const response = await getAI().models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: prompt,
+    const response = await getAI().chat.completions.create({
+      model: 'llama-3.1-8b-instant',
+      messages: [{ role: 'user', content: prompt }],
     });
     
-    res.status(200).json({ letter: response.text });
+    res.status(200).json({ letter: response.choices[0]?.message?.content });
   } catch (error) {
     console.error('Error getting companion letter:', error);
-    res.status(500).json({ message: 'AI letter generation failed. Please check if the Gemini API key is configured correctly.' });
+    res.status(500).json({ message: 'AI letter generation failed. Please check if the Groq API key is configured correctly.' });
   }
 };
 

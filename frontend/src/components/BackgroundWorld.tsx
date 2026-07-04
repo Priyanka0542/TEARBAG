@@ -91,8 +91,34 @@ export const BackgroundWorld = () => {
         </svg>
       </motion.div>
 
+      {/* 2.5 Anime Wow Factor: Falling Sakura (Cherry Blossom) Petals */}
+      {[...Array(15)].map((_, i) => (
+        <motion.div
+          key={`sakura-${i}`}
+          initial={{ 
+            y: '-10vh', 
+            x: `${Math.random() * 100}vw`,
+            rotate: Math.random() * 360,
+            scale: Math.random() * 0.5 + 0.5
+          }}
+          animate={{
+            y: '110vh',
+            x: `${Math.random() * 100}vw`,
+            rotate: Math.random() * 720,
+          }}
+          transition={{
+            duration: Math.random() * 10 + 15,
+            repeat: Infinity,
+            delay: Math.random() * 15,
+            ease: "linear"
+          }}
+          className="absolute w-3 h-4 bg-pink-300 rounded-tl-full rounded-br-full opacity-60 blur-[1px] shadow-[0_0_10px_#f472b6]"
+          style={{ transformOrigin: 'center' }}
+        />
+      ))}
+
       {/* 3. Glowing Magical Grid (Floor) */}
-      <div 
+      <div  
         className="absolute bottom-0 left-0 w-full h-[40vh] opacity-20"
         style={{
           background: 'linear-gradient(transparent, rgba(139, 92, 246, 0.4))',

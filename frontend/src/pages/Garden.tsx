@@ -116,7 +116,7 @@ export const Garden = () => {
         </p>
       </header>
 
-      <div className="flex-1 glass-strong rounded-[3rem] p-8 md:p-14 relative overflow-hidden flex flex-col border border-white/5">
+      <div className="flex-1 glass-strong holo-card rounded-[3rem] p-8 md:p-14 min-h-[30rem] relative overflow-hidden flex flex-col border border-white/5">
         <div className="flex justify-between items-center mb-8 border-b border-border/30 pb-4 relative z-20">
           <div className="flex items-center gap-2 text-primary/80 font-medium">
             <Sun className="w-5 h-5 text-yellow-400" />

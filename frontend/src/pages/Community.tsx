@@ -99,7 +99,7 @@ export const Community = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: i * 0.05 }}
                 key={entry._id}
-                className="glass p-8 rounded-3xl relative overflow-hidden group border border-blue-500/10 hover:border-blue-500/30 transition-all duration-300"
+                className="glass holo-card p-8 rounded-[2rem] flex flex-col gap-4 border border-blue-500/10 hover:border-blue-500/30 transition-all hover:shadow-[0_0_30px_-5px_rgba(59,130,246,0.3)] min-h-[12rem]"
               >
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500/0 via-blue-500/20 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 

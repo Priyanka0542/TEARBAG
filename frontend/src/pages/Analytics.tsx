@@ -90,7 +90,7 @@ export const Analytics = () => {
         {/* Streak Card */}
         <motion.div 
           whileHover={{ y: -5 }}
-          className="glass p-8 rounded-3xl flex flex-col items-center text-center justify-center border-orange-500/20 shadow-[0_0_40px_-15px_rgba(249,115,22,0.15)]"
+          className="glass holo-card p-8 min-h-[16rem] rounded-3xl flex flex-col items-center text-center justify-center border-emerald-500/20 shadow-[0_0_40px_-15px_rgba(16,185,129,0.15)]"
         >
           <div className="w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center mb-4">
             <Flame className="w-8 h-8 text-orange-500" />
@@ -104,7 +104,7 @@ export const Analytics = () => {
         {/* Total Entries Card */}
         <motion.div 
           whileHover={{ y: -5 }}
-          className="glass p-8 rounded-3xl flex flex-col items-center text-center justify-center border-blue-500/20 shadow-[0_0_40px_-15px_rgba(59,130,246,0.15)]"
+          className="glass holo-card p-8 min-h-[16rem] rounded-3xl flex flex-col items-center text-center justify-center border-blue-500/20 shadow-[0_0_40px_-15px_rgba(59,130,246,0.15)]"
         >
           <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mb-4">
             <BookOpen className="w-8 h-8 text-blue-500" />
@@ -118,7 +118,7 @@ export const Analytics = () => {
         {/* AI Generator CTA Card */}
         <motion.div 
           whileHover={{ y: -5 }}
-          className="glass p-8 rounded-3xl flex flex-col items-center text-center justify-center border-primary/20 shadow-[0_0_40px_-15px_rgba(124,58,237,0.15)] relative overflow-hidden"
+          className="glass holo-card p-8 min-h-[16rem] rounded-3xl flex flex-col items-center text-center justify-center border-primary/20 shadow-[0_0_40px_-15px_rgba(124,58,237,0.15)] relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50" />
           <Sparkles className="w-8 h-8 text-primary mb-4 relative z-10" />
@@ -138,7 +138,7 @@ export const Analytics = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Mood Distribution Chart */}
-        <div className="glass p-8 rounded-3xl">
+        <div className="glass holo-card p-8 rounded-3xl flex flex-col min-h-[24rem]">
           <h3 className="text-xl font-heading font-semibold mb-6 text-foreground">Mood Distribution</h3>
           {stats?.moodData?.length > 0 ? (
             <div className="h-[300px] w-full">
@@ -175,7 +175,7 @@ export const Analytics = () => {
         </div>
 
         {/* AI Summary Result */}
-        <div className="glass p-8 rounded-3xl flex flex-col bg-primary/5 border-primary/20">
+        <div className="glass holo-card p-8 rounded-3xl flex flex-col bg-primary/5 border-primary/20 min-h-[24rem]">
           <div className="flex items-center gap-3 mb-6 border-b border-primary/10 pb-4">
             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-primary" />
