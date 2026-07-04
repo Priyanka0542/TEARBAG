@@ -235,8 +235,10 @@ export const Dashboard = () => {
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
         <motion.div 
-          whileHover={{ y: -5 }}
-          className="glass rounded-[2.5rem] p-8 h-72 flex flex-col justify-between relative overflow-hidden group transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10"
+          animate={{ y: [0, -8, 0] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          whileHover={{ scale: 1.02 }}
+          className="glass rounded-[2.5rem] p-8 h-72 flex flex-col justify-between relative overflow-hidden group hover:shadow-2xl hover:shadow-primary/20"
         >
           <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/20 blur-[80px] rounded-full group-hover:bg-primary/30 transition-colors duration-700" />
           <h3 className="text-xl font-heading font-medium text-muted-foreground flex items-center gap-2">
@@ -251,8 +253,10 @@ export const Dashboard = () => {
         </motion.div>
 
         <motion.div 
-          whileHover={{ y: -5 }}
-          className="glass rounded-[2.5rem] p-8 h-72 flex flex-col justify-between relative overflow-hidden group transition-all duration-500 hover:shadow-2xl hover:shadow-pink-500/10"
+          animate={{ y: [0, -8, 0] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          whileHover={{ scale: 1.02 }}
+          className="glass rounded-[2.5rem] p-8 h-72 flex flex-col justify-between relative overflow-hidden group hover:shadow-2xl hover:shadow-pink-500/20"
         >
           <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-pink-500/10 blur-[80px] rounded-full group-hover:bg-pink-500/20 transition-colors duration-700" />
           <h3 className="text-xl font-heading font-medium text-muted-foreground flex items-center gap-2 shrink-0">

@@ -4,7 +4,7 @@ import { AuthRequest } from '../middleware/authMiddleware';
 import { GoogleGenAI } from '@google/genai';
 import { format } from 'date-fns';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
+const getAI = () => new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY as string });
 
 export const getEntries = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -68,7 +68,7 @@ export const createEntry = async (req: AuthRequest, res: Response): Promise<void
         Intensity: [a number between 0.0 and 1.0]
         Tags: [#tag1, #tag2, #tag3]`;
         
-        const response = await ai.models.generateContent({
+        const response = await getAI().models.generateContent({
           model: 'gemini-2.5-flash',
           contents: prompt,
         });
@@ -117,7 +117,8 @@ export const createEntry = async (req: AuthRequest, res: Response): Promise<void
     const createdEntry = await entry.save();
     res.status(201).json(createdEntry);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error creating entry:', error);
+    res.status(500).json({ message: 'Failed to create entry. Server error.' });
   }
 };
 
@@ -158,7 +159,8 @@ export const getAnalytics = async (req: AuthRequest, res: Response): Promise<voi
 
     res.status(200).json({ moodData, streak, totalEntries: entries.length });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching analytics:', error);
+    res.status(500).json({ message: 'Failed to fetch analytics. Server error.' });
   }
 };
 
@@ -174,16 +176,25 @@ export const generateWeeklySummary = async (req: AuthRequest, res: Response): Pr
     }
 
     const journalContent = entries.map(e => `Moods: ${e.moods?.join(', ')}. Entry: ${e.content}`).join('\n\n');
-    const prompt = `You are an empathetic, insightful psychological AI companion for TearBag. Below are the user's journal entries from the past 7 days. Write a short, encouraging 2-paragraph summary of their emotional week. Highlight their strengths, growth, or give gentle advice on how to navigate their recurring feelings. Speak directly to the user warmly.\n\n${journalContent}`;
+    const prompt = `You are a gentle, wise spirit living in a magical world called TearBag. 
+Below are the user's journal entries from the past 7 days. 
+Write exactly 2 very short, incredibly poetic, and simple paragraphs summarizing their emotional week. 
+Do not use big or complex words. Speak softly. 
+Make the user feel deeply seen, loved, and safe. Create a "wow, this is beautiful" feeling. 
+Highlight their growth or give gentle advice on navigating their feelings.
+
+Journal History:
+${journalContent}`;
     
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
     });
     
     res.status(200).json({ summary: response.text });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error generating weekly summary:', error);
+    res.status(500).json({ message: 'AI generation failed. Please check if the Gemini API key is configured correctly.' });
   }
 };
 
@@ -193,9 +204,12 @@ export const getDailyPrompt = async (req: AuthRequest, res: Response): Promise<v
     
     let promptText = "How are you feeling today?";
     if (lastEntry) {
-      const prompt = `You are the AI companion for TearBag. The user's last journal entry had the mood(s): ${lastEntry.moods?.join(', ')} and they wrote: "${lastEntry.content}". Generate a single, short, warm, and engaging question to ask them today as a daily check-in prompt based on their last entry. Do not use quotes. Maximum 1 sentence.`;
+      const prompt = `You are a gentle, magical spirit in TearBag. 
+The user's last journal entry had the mood(s): ${lastEntry.moods?.join(', ')} and they wrote: "${lastEntry.content}". 
+Generate exactly ONE short, beautiful, and incredibly simple question to ask them today as a check-in. 
+Do not use big words. Make it feel like a warm, safe hug. Do not use quotes. Maximum 1 sentence.`;
       
-      const response = await ai.models.generateContent({
+      const response = await getAI().models.generateContent({
         model: 'gemini-2.5-flash',
         contents: prompt,
       });
@@ -204,7 +218,8 @@ export const getDailyPrompt = async (req: AuthRequest, res: Response): Promise<v
     
     res.status(200).json({ prompt: promptText });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error getting daily prompt:', error);
+    res.status(500).json({ message: 'Failed to fetch daily prompt. Server error.' });
   }
 };
 
@@ -217,25 +232,28 @@ export const getCompanionLetter = async (req: AuthRequest, res: Response): Promi
       pastContext = entries.map(e => `[${format(new Date(e.date), 'MMM d, yyyy')} - Mood: ${e.moods?.join(', ')}] ${e.content}`).join('\n\n');
     }
 
-    const prompt = `You are a deeply empathetic AI emotional companion.
-    Below is the user's journal history over their last few entries.
-    Read their journey, and write a personalized, supportive, and poetic 3-4 paragraph letter to them.
-    Validate their struggles, celebrate their wins, and offer gentle encouragement.
-    Do not mention that you are reading from a database or use robotic language. Speak like a wise, caring friend.
-    
-    Journal History:
-    ${pastContext}
-    
-    Write the letter now:`;
+    const prompt = `You are a gentle, wise spirit in a magical anime-like world called TearBag.
+Below is the user's recent journal history.
+Read their journey, and write a personalized, incredibly beautiful, and poetic 3-paragraph letter to them.
+Use extremely simple, soft, and warm language. Do not use big words.
+Make them feel deeply loved, safe, and understood—like receiving a warm hug on a rainy day.
+End the letter with a beautiful, simple metaphor about the stars, rain, seasons, or glowing trees.
+Do not mention that you are an AI or reading from a database.
 
-    const response = await ai.models.generateContent({
+Journal History:
+${pastContext}
+
+Write the letter now:`;
+
+    const response = await getAI().models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
     });
     
     res.status(200).json({ letter: response.text });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error getting companion letter:', error);
+    res.status(500).json({ message: 'AI letter generation failed. Please check if the Gemini API key is configured correctly.' });
   }
 };
 

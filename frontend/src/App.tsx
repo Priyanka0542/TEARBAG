@@ -18,6 +18,7 @@ import { AmbientSound } from './components/AmbientSound';
 import { NotFound } from './pages/NotFound';
 
 import { AnimatePresence, motion } from 'framer-motion';
+import { GlobalParticles } from './components/GlobalParticles';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useStore();
@@ -273,6 +274,7 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 relative">
+        <GlobalParticles />
         <EmotionEnvironment />
         <Navbar />
         <AmbientSound />
