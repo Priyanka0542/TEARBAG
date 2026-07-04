@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { BarChart as BarChartIcon, Flame, BookOpen, Sparkles, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BarChart as BarChartIcon, Flame, BookOpen, Sparkles, Loader2, AlertCircle, X } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { api } from '../lib/api';
 
@@ -11,14 +11,15 @@ export const Analytics = () => {
   const [summary, setSummary] = useState<string>('');
   const [loadingStats, setLoadingStats] = useState(true);
   const [loadingSummary, setLoadingSummary] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
         const { data } = await api.get('/entries/analytics');
         setStats(data);
-      } catch (err) {
-        console.error('Failed to fetch analytics:', err);
+      } catch (err: any) {
+        setError(err.response?.data?.message || 'Failed to load analytics.');
       } finally {
         setLoadingStats(false);
       }
@@ -28,11 +29,12 @@ export const Analytics = () => {
 
   const generateSummary = async () => {
     setLoadingSummary(true);
+    setError('');
     try {
       const { data } = await api.post('/entries/analytics/summary');
       setSummary(data.summary);
-    } catch (err) {
-      console.error('Failed to generate summary:', err);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to generate weekly summary. The AI might be busy — try again in a moment.');
     } finally {
       setLoadingSummary(false);
     }
@@ -40,8 +42,9 @@ export const Analytics = () => {
 
   if (loadingStats) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center">
+      <div className="min-h-[80vh] flex flex-col items-center justify-center gap-4">
         <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+        <p className="text-muted-foreground text-sm">Loading your insights...</p>
       </div>
     );
   }
@@ -64,6 +67,25 @@ export const Analytics = () => {
         Emotional Insights
       </h1>
 
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden mb-6"
+          >
+            <div className="p-4 rounded-2xl bg-red-500/10 backdrop-blur-md text-red-400 text-sm border border-red-500/20 flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 shrink-0" />
+              {error}
+              <button onClick={() => setError('')} className="ml-auto text-red-400/60 hover:text-red-400 cursor-pointer" aria-label="Dismiss error">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {/* Streak Card */}
         <motion.div 
@@ -75,7 +97,7 @@ export const Analytics = () => {
           </div>
           <p className="text-muted-foreground font-medium mb-1">Current Streak</p>
           <h2 className="text-4xl font-heading font-bold text-foreground">
-            {stats?.streak} <span className="text-xl text-muted-foreground font-medium">days</span>
+            {stats?.streak ?? 0} <span className="text-xl text-muted-foreground font-medium">days</span>
           </h2>
         </motion.div>
 
@@ -89,7 +111,7 @@ export const Analytics = () => {
           </div>
           <p className="text-muted-foreground font-medium mb-1">Total Memories</p>
           <h2 className="text-4xl font-heading font-bold text-foreground">
-            {stats?.totalEntries}
+            {stats?.totalEntries ?? 0}
           </h2>
         </motion.div>
 
@@ -101,13 +123,16 @@ export const Analytics = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-50" />
           <Sparkles className="w-8 h-8 text-primary mb-4 relative z-10" />
           <p className="text-muted-foreground font-medium mb-4 relative z-10 text-sm">Analyze your emotional growth over the past week.</p>
-          <button 
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={generateSummary}
             disabled={loadingSummary}
-            className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-medium shadow-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-2 relative z-10"
+            className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-medium shadow-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-2 relative z-10 cursor-pointer disabled:opacity-60"
           >
-            {loadingSummary ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Generate Summary'}
-          </button>
+            {loadingSummary ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+            {loadingSummary ? 'Generating...' : 'Generate Summary'}
+          </motion.button>
         </motion.div>
       </div>
 
@@ -142,8 +167,9 @@ export const Analytics = () => {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-              Not enough mood data yet.
+            <div className="h-[300px] flex flex-col items-center justify-center text-muted-foreground gap-3">
+              <BarChartIcon className="w-12 h-12 opacity-20" />
+              <p>Not enough mood data yet. Log some memories with moods!</p>
             </div>
           )}
         </div>
@@ -158,7 +184,12 @@ export const Analytics = () => {
           </div>
           
           <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-            {summary ? (
+            {loadingSummary ? (
+              <div className="h-full flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                <p className="text-muted-foreground text-sm">AI is analyzing your emotional journey...</p>
+              </div>
+            ) : summary ? (
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

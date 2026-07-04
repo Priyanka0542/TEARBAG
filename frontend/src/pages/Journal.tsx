@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Save, Loader2, Feather, CheckCircle2, Lock, Unlock, Mic, MicOff, Image as ImageIcon, X } from 'lucide-react';
+import { Save, Loader2, Feather, CheckCircle2, Lock, Unlock, Mic, MicOff, Image as ImageIcon, X, AlertCircle } from 'lucide-react';
 import { api } from '../lib/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,27 +16,30 @@ export const Journal = () => {
   const [content, setContent] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState('');
   const [isCapsule, setIsCapsule] = useState(false);
   const [unlockDate, setUnlockDate] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   
-  // Epic 2: Media Vault State
+  // Media Vault State
   const [isListening, setIsListening] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   
   const recognitionRef = useRef<any>(null);
+  const wantListeningRef = useRef(false); // tracks whether user WANTS to listen (vs browser auto-end)
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true;
-      recognitionRef.current.interimResults = true;
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
 
-      recognitionRef.current.onresult = (event: any) => {
+      recognition.onresult = (event: any) => {
         let finalTranscript = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
@@ -48,27 +51,58 @@ export const Journal = () => {
         }
       };
 
-      recognitionRef.current.onerror = (event: any) => {
+      recognition.onerror = (event: any) => {
         console.error('Speech recognition error', event.error);
-        setIsListening(false);
+        // Don't stop on no-speech — just let it keep trying
+        if (event.error !== 'no-speech') {
+          wantListeningRef.current = false;
+          setIsListening(false);
+        }
       };
       
-      recognitionRef.current.onend = () => {
-        setIsListening(false);
+      recognition.onend = () => {
+        // Auto-restart if user still wants to listen
+        // (browsers auto-end recognition after silence)
+        if (wantListeningRef.current) {
+          try {
+            recognition.start();
+          } catch {
+            // Already started, ignore
+          }
+        } else {
+          setIsListening(false);
+        }
       };
+
+      recognitionRef.current = recognition;
     }
+
+    return () => {
+      wantListeningRef.current = false;
+      recognitionRef.current?.stop();
+    };
   }, []);
 
   const toggleListening = () => {
     if (isListening) {
+      wantListeningRef.current = false;
       recognitionRef.current?.stop();
       setIsListening(false);
     } else {
       if (recognitionRef.current) {
-        recognitionRef.current.start();
+        wantListeningRef.current = true;
+        try {
+          recognitionRef.current.start();
+        } catch {
+          // If already started, stop and restart
+          recognitionRef.current.stop();
+          setTimeout(() => {
+            recognitionRef.current?.start();
+          }, 100);
+        }
         setIsListening(true);
       } else {
-        alert("Your browser does not support the Web Speech API. Try Chrome or Safari.");
+        setError("Your browser does not support the Web Speech API. Try Chrome or Safari.");
       }
     }
   };
@@ -76,9 +110,34 @@ export const Journal = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);
-      const url = URL.createObjectURL(file);
-      setImagePreview(url);
+      // Client-side compression: resize to max 1200px and compress
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.onload = () => {
+        const MAX_SIZE = 1200;
+        let { width, height } = img;
+        if (width > MAX_SIZE || height > MAX_SIZE) {
+          if (width > height) {
+            height = (height / width) * MAX_SIZE;
+            width = MAX_SIZE;
+          } else {
+            width = (width / height) * MAX_SIZE;
+            height = MAX_SIZE;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        ctx?.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const resizedFile = new File([blob], file.name, { type: 'image/jpeg' });
+            setImageFile(resizedFile);
+            setImagePreview(URL.createObjectURL(resizedFile));
+          }
+        }, 'image/jpeg', 0.85);
+      };
+      img.src = URL.createObjectURL(file);
     }
   };
 
@@ -90,7 +149,16 @@ export const Journal = () => {
 
   const handleSave = async () => {
     if (!content.trim()) return;
+    setError('');
     setSaving(true);
+    
+    // Stop listening before saving
+    if (isListening) {
+      wantListeningRef.current = false;
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    }
+    
     try {
       const formData = new FormData();
       formData.append('title', title);
@@ -112,8 +180,9 @@ export const Journal = () => {
       setTimeout(() => {
         navigate('/');
       }, 800);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'Failed to save your memory. Please try again.';
+      setError(msg);
       setSaving(false);
     }
   };
@@ -156,6 +225,25 @@ export const Journal = () => {
           <span>{saved ? 'Saved securely' : 'Lock in vault'}</span>
         </motion.button>
       </div>
+
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden mb-6"
+          >
+            <div className="p-4 rounded-2xl bg-red-500/10 backdrop-blur-md text-red-400 text-sm border border-red-500/20 flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 shrink-0" />
+              {error}
+              <button onClick={() => setError('')} className="ml-auto text-red-400/60 hover:text-red-400 cursor-pointer">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className={`glass rounded-[3rem] p-10 md:p-14 min-h-[65vh] flex flex-col relative group transition-all duration-700 ${isFocused ? 'shadow-[0_0_50px_-10px_rgba(124,58,237,0.2)] border-primary/30 bg-card/80' : 'hover:shadow-2xl hover:shadow-primary/5'}`}>
         <input 
@@ -224,6 +312,28 @@ export const Journal = () => {
             )}
           </AnimatePresence>
         </div>
+
+        {/* Voice waveform visualization */}
+        <AnimatePresence>
+          {isListening && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 40 }}
+              exit={{ opacity: 0, height: 0 }}
+              className="flex items-center justify-center gap-1 mb-6"
+            >
+              {[...Array(20)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  animate={{ height: [4, Math.random() * 24 + 8, 4] }}
+                  transition={{ duration: 0.5 + Math.random() * 0.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.05 }}
+                  className="w-1 rounded-full bg-red-400/60"
+                  style={{ minHeight: 4 }}
+                />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {imagePreview && (
           <div className="relative mb-6 rounded-2xl overflow-hidden max-h-[300px] w-max group/image">
